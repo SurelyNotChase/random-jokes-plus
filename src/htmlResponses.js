@@ -25,31 +25,24 @@ const indexPage = `
 </body>
 </html>`;
 
-const get404Response = (request,response,params) =>{
-    
-    response.writeHead(404, {
-      'Content-Type': 'text/html',
-    });
-    response.write(errorPage);
-    response.end();
-    
-    
-}
-const getIndexResponse = (request,response,params) =>{
-    
-       response.writeHead(200, {
-      'Content-Type': 'text/html',
-    });
-    response.write(indexPage);
-    response.end();
-    
-}
-
-
+const get404Response = (request, response) => {
+  response.writeHead(404, {
+    'Content-Type': 'text/html',
+  });
+  response.write(errorPage);
+  response.end();
+};
+const getIndexResponse = (request, response) => {
+  response.writeHead(200, {
+    'Content-Type': 'text/html',
+  });
+  response.write(indexPage);
+  response.end();
+};
 
 module.exports = {
-    
-    get404Response,
-    getIndexResponse
-    
-}
+
+  get404Response,
+  getIndexResponse,
+
+};

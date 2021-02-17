@@ -1,4 +1,4 @@
-var _ = require('underscore');
+const _ = require('underscore');
 
 const jokes = [
   {
@@ -67,53 +67,45 @@ const jokes = [
   },
 ];
 
-const length = jokes.length;
+const { length } = jokes;
 
 function getRandomJoke(max = length) {
-    _.shuffle(jokes);
+  _.shuffle(jokes);
   return JSON.stringify(jokes[Math.floor(Math.random() * Math.floor(max))]);
 }
 
+const getJokesResponse = (request, response, params) => {
+  response.writeHead(200, {
+    'Content-Type': 'application/json',
+  });
 
-const getJokesResponse = (request,response,params) => {
-    
-     response.writeHead(200, {
-      'Content-Type': 'application/json',
-    });
-    
-    if(!params.limit||params.limit<=0) params.limit = 5;
-    if(params.limit>10) params.limit = length;
-    
+  const paramData = params;
+  if (!paramData.limit || paramData.limit <= 0) paramData.limit = 5;
+  if (paramData.limit > 10) paramData.limit = length;
 
+  const jokesArray = [];
+  for (let i = 0; i < params.limit; i += 1) {
+    jokesArray.push(getRandomJoke());
+  }
 
-        let jokes = [];
-        for (let i=0;i<params.limit;i++){
-            jokes.push(getRandomJoke())
-        }
-    
-        response.write(JSON.stringify(jokes));
+  response.write(JSON.stringify(jokes));
 
+  response.end();
+};
 
-    response.end();
+const getJokeResponse = (request, response) => {
+  response.writeHead(200, {
+    'Content-Type': 'application/json',
+  });
 
-}
+  response.write(getRandomJoke());
 
-const getJokeResponse = (request,response,params) => {
-    
-     response.writeHead(200, {
-      'Content-Type': 'application/json',
-    });
-
-        response.write(getRandomJoke());
-
-
-    response.end();
-    
-}
+  response.end();
+};
 
 module.exports = {
 
-    getJokeResponse,
-    getJokesResponse
-    
-}
+  getJokeResponse,
+  getJokesResponse,
+
+};

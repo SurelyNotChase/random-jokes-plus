@@ -1,7 +1,3 @@
-const jsonHandler = require('./jsonResponses.js');
-
-const htmlHandler = require('./htmlResponses.js');
-
 const http = require('http');
 
 const url = require('url');
@@ -10,37 +6,35 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const query = require('querystring');
 
+const jsonHandler = require('./jsonResponses.js');
+
+const htmlHandler = require('./htmlResponses.js');
 
 const urlStruct = {
-    
-    '/' : htmlHandler.getIndexResponse,
-    '/random-joke' : jsonHandler.getJokeResponse,
-    '/random-jokes' : jsonHandler.getJokesResponse,
-    notFound : htmlHandler.get404Response
-    
-    
+
+  '/': htmlHandler.getIndexResponse,
+  '/random-joke': jsonHandler.getJokeResponse,
+  '/random-jokes': jsonHandler.getJokesResponse,
+  notFound: htmlHandler.get404Response,
+
 };
 
 const onRequest = (request, response) => {
+  const parsedUrl = url.parse(request.url);
+  const {
+    pathname,
+  } = parsedUrl;
+  const params = query.parse(parsedUrl.query);
 
-    const parsedUrl = url.parse(request.url);
-    const {
-        pathname
-    } = parsedUrl;
-    const params = query.parse(parsedUrl.query);
-    
-    if(urlStruct[pathname]){
-        console.log(params.limit)
-        urlStruct[pathname](request,response,params)
-        
-    }else{
-        urlStruct.notFound(request,response,params);
-    }
-}
+  if (urlStruct[pathname]) {
+    // console.log(params.limit);
+    urlStruct[pathname](request, response, params);
+  } else {
+    urlStruct.notFound(request, response, params);
+  }
+};
 
-
-
-//const onRequest = (request, response) => {
+// const onRequest = (request, response) => {
 //  const parsedUrl = url.parse(request.url);
 //  const { pathname } = parsedUrl;
 //
@@ -63,7 +57,7 @@ const onRequest = (request, response) => {
 //    response.write(errorPage);
 //    response.end();
 //  }
-//};
+// };
 
 http.createServer(onRequest).listen(port);
 
