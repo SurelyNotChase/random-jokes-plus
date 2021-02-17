@@ -67,9 +67,7 @@ const jokes = [
   },
 ];
 
-const { length } = jokes;
-
-function getRandomJoke(max = length) {
+function getRandomJoke(max = jokes.length) {
   _.shuffle(jokes);
   return JSON.stringify(jokes[Math.floor(Math.random() * Math.floor(max))]);
 }
@@ -81,14 +79,14 @@ const getJokesResponse = (request, response, params) => {
 
   const paramData = params;
   if (!paramData.limit || paramData.limit <= 0) paramData.limit = 5;
-  if (paramData.limit > 10) paramData.limit = length;
+  if (paramData.limit > 10) paramData.limit = jokes.length;
 
   const jokesArray = [];
   for (let i = 0; i < params.limit; i += 1) {
     jokesArray.push(getRandomJoke());
   }
 
-  response.write(JSON.stringify(jokes));
+  response.write(JSON.stringify(jokesArray));
 
   response.end();
 };
