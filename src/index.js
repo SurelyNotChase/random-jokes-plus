@@ -12,52 +12,44 @@ const htmlHandler = require('./htmlResponses.js');
 
 const urlStruct = {
 
-  '/': htmlHandler.getIndexResponse,
-  '/random-joke': jsonHandler.getJokeResponse,
-  '/random-jokes': jsonHandler.getJokesResponse,
-  notFound: htmlHandler.get404Response,
+
+    'GET': {
+        '/': htmlHandler.getIndexResponse,
+        '/random-joke': jsonHandler.getJokeResponse,
+        '/random-jokes': jsonHandler.getJokeResponse,
+        '/default-styles.css': htmlHandler.getStyleResponse,
+        notFound: htmlHandler.get404Response,
+
+    },
+
+    'HEAD': {
+        '/random-joke': jsonHandler.getJokeResponseMeta,
+        '/random-jokes': jsonHandler.getJokeResponseMeta,
+    }
+
 
 };
 
 const onRequest = (request, response) => {
-  const parsedUrl = url.parse(request.url);
-  const {
-    pathname,
-  } = parsedUrl;
-  const params = query.parse(parsedUrl.query);
 
-  if (urlStruct[pathname]) {
-    // console.log(params.limit);
-    urlStruct[pathname](request, response, params);
-  } else {
-    urlStruct.notFound(request, response, params);
-  }
+
+    let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
+    acceptedTypes = acceptedTypes || [];
+
+
+    const parsedUrl = url.parse(request.url);
+    const {
+        pathname,
+    } = parsedUrl;
+    const params = query.parse(parsedUrl.query);
+
+    if (urlStruct[request.method][pathname]) {
+
+        urlStruct[request.method][pathname](request, response, params, acceptedTypes);
+    } else {
+        urlStruct[request.method].notFound(request, response, params);
+    }
 };
-
-// const onRequest = (request, response) => {
-//  const parsedUrl = url.parse(request.url);
-//  const { pathname } = parsedUrl;
-//
-//  if (pathname === '/') {
-//    response.writeHead(200, {
-//      'Content-Type': 'application/json',
-//    });
-//    response.write(getRandomJoke());
-//    response.end();
-//  } else if (pathname === '/random-joke') {
-//    response.writeHead(200, {
-//      'Content-Type': 'application/json',
-//    });
-//    response.write(getRandomJoke());
-//    response.end();
-//  } else {
-//    response.writeHead(404, {
-//      'Content-Type': 'text/html',
-//    });
-//    response.write(errorPage);
-//    response.end();
-//  }
-// };
 
 http.createServer(onRequest).listen(port);
 
